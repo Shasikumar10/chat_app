@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   Avatar,
   Stack,
-  Container,
   Paper,
   TextField,
   Typography,
@@ -11,7 +10,7 @@ import {
 } from "@mui/material";
 import { CameraAlt } from "@mui/icons-material";
 
-// Create a custom VisuallyHiddenInput component for accessibility
+// Custom VisuallyHiddenInput component for file input
 const VisuallyHiddenInput = (props) => (
   <input
     {...props}
@@ -27,23 +26,17 @@ const VisuallyHiddenInput = (props) => (
 
 // Validators
 const usernameValidator = (value) => {
-  if (!value) {
-    return "Username is required";
-  }
-  if (value.length < 5) {
-    return "Username must be at least 5 characters long";
-  }
+  if (!value) return "Username is required";
+  if (value.length < 5) return "Username must be at least 5 characters long";
   return "";
 };
 
 const passwordValidator = (value) => {
-  const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-  if (!value) {
-    return "Password is required";
-  }
-  if (!strongPasswordRegex.test(value)) {
-    return "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character";
-  }
+  const strongPasswordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  if (!value) return "Password is required";
+  if (!strongPasswordRegex.test(value))
+    return "Password must include uppercase, lowercase, number, and special character";
   return "";
 };
 
@@ -62,71 +55,46 @@ const useInputValidation = (initialValue, validate) => {
     return !errorMsg;
   };
 
-  return {
-    value,
-    error,
-    changeHandler,
-    validate: validateField,
-  };
+  return { value, error, changeHandler, validate: validateField };
 };
 
-// Custom hook for file handling
-const useFileHandler = () => {
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
-
-  const changeHandler = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result);
-      };
-      reader.readAsDataURL(selectedFile);
-    }
-  };
-
-  return { file, preview, changeHandler };
-};
-
-const Login = () => {
+const Login = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
   const toggleLogin = () => setIsLogin((prev) => !prev);
 
-  // Input fields with validation
+  // Input fields
   const name = useInputValidation("", (value) => (!value ? "Name is required" : ""));
   const bio = useInputValidation("", (value) => (!value ? "Bio is required" : ""));
   const username = useInputValidation("", usernameValidator);
   const password = useInputValidation("", passwordValidator);
 
-  // Avatar file handling
-  const avatar = useFileHandler();
+  // Avatar image state
+  const [avatarImage, setAvatarImage] = useState(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAvatarImage(URL.createObjectURL(file));
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form validation and submission logic
     if (
       (!isLogin || (name.validate() && bio.validate())) &&
       username.validate() &&
       password.validate()
     ) {
-      console.log("Form Submitted", {
-        name: name.value,
-        bio: bio.value,
-        username: username.value,
-        password: password.value,
-        avatar: avatar.file,
-      });
+      console.log("Form Submitted", { name: name.value, bio: bio.value, username: username.value });
+      onLogin(); // Simulate login
     }
   };
 
   return (
-    <Container
-      component="main"
-      maxWidth="xs"
-      sx={{
-        height: "100vh",
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundImage: "linear-gradient(to bottom, #f5f5e1, #f99f9f)",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -139,6 +107,8 @@ const Login = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          width: "100%",
+          maxWidth: "400px",
         }}
       >
         {isLogin ? (
@@ -171,9 +141,7 @@ const Login = () => {
                 helperText={password.error}
               />
               <Button
-                sx={{
-                  marginTop: 2,
-                }}
+                sx={{ marginTop: 2 }}
                 variant="contained"
                 color="primary"
                 type="submit"
@@ -181,9 +149,6 @@ const Login = () => {
               >
                 Login
               </Button>
-              <Typography textAlign="center" m="1rem">
-                OR
-              </Typography>
               <Button fullWidth variant="text" onClick={toggleLogin}>
                 Sign Up Instead
               </Button>
@@ -195,33 +160,16 @@ const Login = () => {
               Sign Up
             </Typography>
             <form onSubmit={handleSubmit} style={{ marginTop: "1rem" }}>
-              <Stack
-                position="relative"
-                width="10rem"
-                margin="auto"
-                alignItems="center"
-              >
+              <Stack position="relative" width="10rem" margin="auto" alignItems="center">
                 <Avatar
-                  sx={{
-                    width: "10rem",
-                    height: "10rem",
-                    objectFit: "cover",
-                  }}
-                  src={avatar.preview}
+                  sx={{ width: "10rem", height: "10rem", objectFit: "cover" }}
+                  src={avatarImage || "/default-avatar.png"}
                 />
                 <IconButton
-                  sx={{
-                    position: "absolute",
-                    bottom: 0,
-                    right: 0,
-                  }}
+                  sx={{ position: "absolute", bottom: 0, right: 0 }}
                 >
                   <CameraAlt />
-                  <VisuallyHiddenInput
-                    type="file"
-                    accept="image/*"
-                    onChange={avatar.changeHandler}
-                  />
+                  <VisuallyHiddenInput type="file" onChange={handleFileChange} />
                 </IconButton>
               </Stack>
               <TextField
@@ -270,9 +218,7 @@ const Login = () => {
                 helperText={password.error}
               />
               <Button
-                sx={{
-                  marginTop: 2,
-                }}
+                sx={{ marginTop: 2 }}
                 variant="contained"
                 color="primary"
                 type="submit"
@@ -280,9 +226,6 @@ const Login = () => {
               >
                 Sign Up
               </Button>
-              <Typography textAlign="center" m="1rem">
-                OR
-              </Typography>
               <Button fullWidth variant="text" onClick={toggleLogin}>
                 Login Instead
               </Button>
@@ -290,7 +233,7 @@ const Login = () => {
           </>
         )}
       </Paper>
-    </Container>
+    </div>
   );
 };
 
