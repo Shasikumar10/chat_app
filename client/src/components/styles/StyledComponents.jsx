@@ -1,5 +1,5 @@
 import { styled } from "@mui/material";
-import { Link as LinkComponent } from "react-router-dom";
+import { Link as LinkComponent } from "react-router-dom"; // Correct import
 
 export const VisuallyHiddenInput = styled("input")({
   border: 0,
@@ -13,7 +13,7 @@ export const VisuallyHiddenInput = styled("input")({
   width: "1px",
 });
 
-export const Link = styled(LinkeComponent)`
+export const Link = styled(LinkComponent)` // Correct usage of LinkComponent
   text-decoration: none;
   color: black;
   padding: 1rem;
@@ -21,3 +21,4 @@ export const Link = styled(LinkeComponent)`
     background-color: #f0f0f0;
   }
 `;
+export default styled(LinkComponent);

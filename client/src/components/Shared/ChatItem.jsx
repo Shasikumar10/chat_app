@@ -1,60 +1,57 @@
-import React, { memo } from 'react';
-import {Link } from 'react-router-dom'
-import {Stack,Typography } from '@mui/material'
-const ChatItem = ({
-    avatar=[],
-    name,
-    _id,
-    groupChat=false,
-    sameSender,
-    isOnline,
-    newMessageAlert,
-    index = 0,
-    handleDeleteChatOpen,
-    
-}) => {
-  return <Link to={`/chat/${_id}`}  onContextMenu={(e)=> handleDeleteChatOpen(e,_id,groupChat)} >
-    <div style={{
-        display: "flex",
-        gap:"1rem",
-        alignItems: "center",
-        padding: "1rem",
-        backgroundcolor: sameSender ? "black" : "unset",
-        color:sameSender ? "White": "unset",
-        justifyContent: "space-between",
-        position: "relative",
-    }} 
-    >
-        {/*Avatr card*/}
-        <Stack>
-            <Typography>{name}</Typography>
-            {
-                newMessageAlert && (
-                    <Typography>{newMessageAlert.count} New Message </Typography>
-                )
+import { Box, Stack, Typography } from '@mui/material';
+import React, { memo } from 'react'; // Import memo from React
+import { Link } from 'react-router-dom';
 
-            }
+const ChatItem = ({
+  avatar = [],
+  name,
+  _id,
+  groupChat = false,
+  sameSender,
+  isOnline,
+  newMessageAlert,
+  index = 0,
+  handleDeleteChatopen,
+}) => {
+  return (
+    <Link to={`/chat/${_id}`} onContextMenu={(e) => handleDeleteChatopen(e, _id, groupChat)}>
+      <div
+        style={{
+          display: "flex",
+          gap: "1rem",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "1rem",
+          backgroundColor: sameSender ? "black" : "unset",
+          color: sameSender ? "white" : "unset",
+          position: "relative",
+        }}
+      >
+        {/* Avatar Card */}
+        <Stack>
+          <Typography>{name}</Typography>
+          {newMessageAlert?.count > 0 && (
+            <Typography>{newMessageAlert.count} New Message</Typography>
+          )}
         </Stack>
 
-        isOnline && <Box
-         sx={{
-            backgroundColor: "green",
-            width: "10rem",
-            height: "10rem",
-            borderRadius: "50%",
-            position: "absolute",
-            top: "50%",
-            right: "1rem",
-            zIndex: 999,
-            transition: "translateY(-50%)",
-        }} />
+        {/* Online Indicator */}
+        {isOnline && (
+          <Box
+            sx={{
+              width: "10px",
+              position: "absolute",
+              top: "50%",
+              right: "1rem",
+              backgroundColor: "green",
+              borderRadius: "50%",
+              transform: "translateY(-50%)",
+            }}
+          />
+        )}
+      </div>
+    </Link>
+  );
+};
 
-
-
-
-
-    </div>
-  </Link>
-}
-
-export default memo(ChatItem);
+export default memo(ChatItem); // Correct usage of memo

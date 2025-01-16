@@ -7,16 +7,10 @@ import ChatList from "../specific/ChatList";
 const AppLayout = (WrappedComponent, sampleChats = []) => {
   return (props) => (
     <>
-      {/* Title Section */}
       <Title />
-
-      {/* Header Section */}
       <Header />
-
-      {/* Layout Grid */}
       <Grid container height="calc(100vh - 4rem)">
-        
-        {/* Sidebar Section */}
+        {/* Left Sidebar */}
         <Grid
           item
           xs={4}
@@ -25,15 +19,16 @@ const AppLayout = (WrappedComponent, sampleChats = []) => {
           sx={{ display: { xs: "none", sm: "block" } }}
           height="100%"
         >
-          <ChatList chats={sampleChats} />
+          {/* Passing sampleChats to ChatList */}
+          <ChatList chats={sampleChats} chatId="1" />
         </Grid>
 
-        {/* Main Content Section */}
+        {/* Main Content */}
         <Grid item xs={12} sm={8} md={5} lg={6} height="100%">
           <WrappedComponent {...props} />
         </Grid>
 
-        {/* Additional Sidebar Section */}
+        {/* Right Sidebar */}
         <Grid
           item
           md={4}
